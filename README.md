@@ -1788,3 +1788,2277 @@ console.log(user1 === user3); // true
 To compare similar objects by content, you need a custom comparison, a utility library, or a stable serialization strategy for simple data. Be careful with serialization because property order, dates, functions, `undefined`, symbols, and circular references can make it unreliable for complex objects.
 
 [Go To Top](#how-to-use-this-list)
+
+
+---
+
+<a id="question-51"></a>
+## 51. What is a function in JavaScript?
+
+**Answer:** A function is a reusable block of code designed to perform a specific task. In JavaScript, functions are first-class objects, which means they can be stored in variables, passed as arguments, returned from other functions, and assigned as object properties.
+
+Functions are central to JavaScript because they support procedural programming, object-oriented patterns, functional programming, callbacks, closures, modules, and asynchronous code.
+
+```js
+function add(a, b) {
+  return a + b;
+}
+
+console.log(add(2, 3)); // 5
+```
+
+A function can receive input through parameters and produce output through a `return` statement. If no value is explicitly returned, the function returns `undefined`.
+
+```js
+function logMessage(message) {
+  console.log(message);
+}
+
+const result = logMessage("Hello");
+console.log(result); // undefined
+```
+
+Because functions are objects, they can also have properties, although this is not common in everyday application code.
+
+```js
+function greet() {
+  return "Hello";
+}
+
+greet.language = "English";
+console.log(greet.language); // English
+```
+
+In interviews, it is important to understand that JavaScript functions are not just syntax for reusable code. They also create scope, preserve lexical environments through closures, and control the value of `this` depending on how they are called.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-52"></a>
+## 52. What are function declarations?
+
+**Answer:** A function declaration defines a named function using the `function` keyword. Function declarations are hoisted, which means they can be called before they appear in the source code.
+
+```js
+console.log(square(4)); // 16
+
+function square(number) {
+  return number * number;
+}
+```
+
+During the creation phase of execution, JavaScript stores the entire function declaration in memory. This is different from variables declared with `var`, which are hoisted with an initial value of `undefined`.
+
+Function declarations are useful when you want clear, named, reusable functions at the top level of a scope. They make stack traces easier to read and are often preferred for utilities, algorithms, and public API functions.
+
+```js
+function isEven(value) {
+  return value % 2 === 0;
+}
+
+function getEvenNumbers(numbers) {
+  return numbers.filter(isEven);
+}
+```
+
+One important detail is that function declarations are scoped. In modern JavaScript, a function declared inside a block is block-scoped in strict mode, but older behavior may differ in non-strict environments. For predictable code, avoid relying on function declaration behavior inside conditional blocks.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-53"></a>
+## 53. What are function expressions?
+
+**Answer:** A function expression creates a function as part of an expression, usually by assigning it to a variable. Unlike function declarations, function expressions are not fully hoisted in a callable form.
+
+```js
+const multiply = function (a, b) {
+  return a * b;
+};
+
+console.log(multiply(3, 4)); // 12
+```
+
+The variable is hoisted according to whether it was declared with `var`, `let`, or `const`, but the function value is assigned only when execution reaches that line.
+
+```js
+console.log(add); // ReferenceError with const/let before initialization
+
+const add = function (a, b) {
+  return a + b;
+};
+```
+
+Function expressions can be anonymous or named. Named function expressions are helpful for debugging and recursion.
+
+```js
+const factorial = function fact(n) {
+  if (n <= 1) return 1;
+  return n * fact(n - 1);
+};
+```
+
+Function expressions are common when passing functions as callbacks, creating methods dynamically, or controlling when a function should become available.
+
+```js
+button.addEventListener("click", function handleClick() {
+  console.log("Button clicked");
+});
+```
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-54"></a>
+## 54. What is the difference between function declarations and function expressions?
+
+**Answer:** The main difference is hoisting and how the function is created. Function declarations are hoisted with their full definition, so they can be called before their position in the code. Function expressions are created when execution reaches the assignment.
+
+```js
+sayHello(); // Works
+
+function sayHello() {
+  console.log("Hello");
+}
+```
+
+```js
+sayHi(); // ReferenceError
+
+const sayHi = function () {
+  console.log("Hi");
+};
+```
+
+Function declarations are usually better for named, reusable functions that define the main behavior of a module. Function expressions are useful when a function is treated as a value, passed around, conditionally assigned, or used as a callback.
+
+```js
+const operation = shouldAdd
+  ? function (a, b) { return a + b; }
+  : function (a, b) { return a - b; };
+```
+
+Another practical difference is readability. Declarations often make code read like a list of capabilities, while expressions are better when the function is part of a larger expression or configuration.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-55"></a>
+## 55. How are arrow functions different from regular functions?
+
+**Answer:** Arrow functions provide shorter syntax and lexical `this` binding. Unlike regular functions, arrow functions do not create their own `this`, `arguments`, `super`, or `new.target`. Instead, they capture these values from the surrounding scope.
+
+```js
+const add = (a, b) => a + b;
+```
+
+The biggest behavioral difference is `this`.
+
+```js
+const user = {
+  name: "Alice",
+  regular() {
+    return this.name;
+  },
+  arrow: () => {
+    return this.name;
+  }
+};
+
+console.log(user.regular()); // Alice
+console.log(user.arrow());   // usually undefined
+```
+
+The arrow function does not bind `this` to `user`; it uses `this` from the outer scope. This makes arrow functions excellent for callbacks that should preserve surrounding `this`.
+
+```js
+class Timer {
+  constructor() {
+    this.seconds = 0;
+  }
+
+  start() {
+    setInterval(() => {
+      this.seconds++;
+    }, 1000);
+  }
+}
+```
+
+Arrow functions also cannot be used as constructors.
+
+```js
+const Person = (name) => {
+  this.name = name;
+};
+
+// new Person("Alice"); // TypeError
+```
+
+Use arrow functions for short callbacks and lexical `this`. Use regular functions for object methods, constructors, prototype methods, and cases where dynamic `this` is required.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-56"></a>
+## 56. What is the `arguments` object?
+
+**Answer:** The `arguments` object is an array-like object available inside regular functions. It contains all arguments passed to the function, even if they were not declared as parameters.
+
+```js
+function sum() {
+  let total = 0;
+
+  for (let i = 0; i < arguments.length; i++) {
+    total += arguments[i];
+  }
+
+  return total;
+}
+
+console.log(sum(1, 2, 3)); // 6
+```
+
+`arguments` is array-like, not a real array. It has indexes and a `length` property, but it does not have array methods like `map()`, `filter()`, or `reduce()` unless you convert it.
+
+```js
+function example() {
+  const args = Array.from(arguments);
+  return args.map(value => value * 2);
+}
+```
+
+In modern JavaScript, rest parameters are usually preferred because they create a real array and are more explicit.
+
+```js
+function sum(...numbers) {
+  return numbers.reduce((total, value) => total + value, 0);
+}
+```
+
+In strict mode and modern code, rest parameters are clearer, safer, and easier to type in TypeScript. The `arguments` object is still important to understand because it appears in older code and interview questions.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-57"></a>
+## 57. Why do arrow functions not have their own `arguments` object?
+
+**Answer:** Arrow functions do not have their own `arguments` object because they are designed to be lightweight functions that inherit certain bindings from their surrounding lexical scope. Just like arrow functions inherit `this`, they also inherit `arguments` from the nearest non-arrow function.
+
+```js
+function outer() {
+  const arrow = () => {
+    console.log(arguments[0]);
+  };
+
+  arrow();
+}
+
+outer("Hello"); // Hello
+```
+
+In this example, `arguments` inside the arrow function refers to the `arguments` object of `outer()`, not to the arrow function itself.
+
+If you need access to an arrow function's arguments, use rest parameters.
+
+```js
+const sum = (...numbers) => {
+  return numbers.reduce((total, value) => total + value, 0);
+};
+
+console.log(sum(1, 2, 3)); // 6
+```
+
+Rest parameters are better because they are explicit, readable, and create a real array. This is one reason modern JavaScript code usually avoids `arguments` unless working with older APIs or compatibility-focused code.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-58"></a>
+## 58. What are callback functions?
+
+**Answer:** A callback function is a function passed into another function to be executed later. Callbacks are used for event handling, array methods, asynchronous operations, and custom behavior injection.
+
+```js
+function greet(name, callback) {
+  const message = `Hello, ${name}`;
+  callback(message);
+}
+
+greet("Alice", function (message) {
+  console.log(message);
+});
+```
+
+Callbacks are common in array methods.
+
+```js
+const numbers = [1, 2, 3];
+const doubled = numbers.map(function (number) {
+  return number * 2;
+});
+```
+
+They are also used heavily in browser events.
+
+```js
+button.addEventListener("click", () => {
+  console.log("Clicked");
+});
+```
+
+Before Promises and `async/await`, callbacks were the main way to handle asynchronous tasks.
+
+```js
+setTimeout(() => {
+  console.log("Runs later");
+}, 1000);
+```
+
+The main advantage of callbacks is flexibility. The main disadvantage is that deeply nested callbacks can become difficult to read and maintain, leading to callback hell. For complex asynchronous flows, Promises and `async/await` are usually easier to manage.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-59"></a>
+## 59. What is a pure function?
+
+**Answer:** A pure function is a function that always returns the same output for the same input and does not produce side effects. It does not modify external state, mutate arguments, perform network requests, write to files, update the DOM, or depend on changing external values.
+
+```js
+function add(a, b) {
+  return a + b;
+}
+```
+
+This function is pure because the result depends only on `a` and `b`.
+
+An impure function depends on or changes something outside itself.
+
+```js
+let taxRate = 0.2;
+
+function calculateTotal(price) {
+  return price + price * taxRate;
+}
+```
+
+This function is impure because changing `taxRate` changes the result for the same `price`.
+
+Mutation also makes a function impure.
+
+```js
+function addItem(items, item) {
+  items.push(item);
+  return items;
+}
+```
+
+A pure alternative creates a new array.
+
+```js
+function addItem(items, item) {
+  return [...items, item];
+}
+```
+
+Pure functions are easier to test, reuse, reason about, cache, parallelize, and debug. They are especially important in functional programming and state management patterns.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-60"></a>
+## 60. What is function composition?
+
+**Answer:** Function composition is the process of combining multiple small functions to create a new function. The output of one function becomes the input of the next function.
+
+```js
+const trim = value => value.trim();
+const lower = value => value.toLowerCase();
+const removeSpaces = value => value.replace(/\s+/g, "-");
+
+const slugify = value => removeSpaces(lower(trim(value)));
+
+console.log(slugify("  Hello World  ")); // hello-world
+```
+
+Composition encourages writing small, focused functions instead of large functions that do many things. This improves readability, testability, and reuse.
+
+A generic `compose()` function usually runs functions from right to left.
+
+```js
+const compose = (...functions) => {
+  return value => functions.reduceRight((result, fn) => fn(result), value);
+};
+
+const slugify = compose(removeSpaces, lower, trim);
+```
+
+A `pipe()` function runs from left to right, which many developers find easier to read.
+
+```js
+const pipe = (...functions) => {
+  return value => functions.reduce((result, fn) => fn(result), value);
+};
+
+const slugify = pipe(trim, lower, removeSpaces);
+```
+
+Function composition is common in data transformations, middleware systems, validation pipelines, and functional programming libraries.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-61"></a>
+## 61. What is currying?
+
+**Answer:** Currying is a technique where a function that takes multiple arguments is transformed into a sequence of functions, each taking one argument at a time.
+
+```js
+function add(a) {
+  return function (b) {
+    return a + b;
+  };
+}
+
+console.log(add(2)(3)); // 5
+```
+
+With arrow functions, currying can be written more compactly.
+
+```js
+const multiply = a => b => a * b;
+
+const double = multiply(2);
+console.log(double(5)); // 10
+```
+
+Currying is useful when you want to create specialized functions from general ones. For example, a generic logger can be curried by log level.
+
+```js
+const log = level => message => {
+  console.log(`[${level}] ${message}`);
+};
+
+const logError = log("ERROR");
+logError("Something went wrong");
+```
+
+Currying is often used in functional programming, configuration-heavy code, validation, and reusable transformations. It can improve composability, but overusing it may make code harder for some teams to read.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-62"></a>
+## 62. What is partial application?
+
+**Answer:** Partial application means creating a new function by pre-filling some arguments of an existing function. The returned function accepts the remaining arguments later.
+
+```js
+function multiply(a, b, c) {
+  return a * b * c;
+}
+
+function partialMultiplyByTwo(b, c) {
+  return multiply(2, b, c);
+}
+
+console.log(partialMultiplyByTwo(3, 4)); // 24
+```
+
+A reusable partial helper can be written using rest parameters.
+
+```js
+function partial(fn, ...presetArgs) {
+  return function (...laterArgs) {
+    return fn(...presetArgs, ...laterArgs);
+  };
+}
+
+const volume = (length, width, height) => length * width * height;
+const tenBy = partial(volume, 10);
+
+console.log(tenBy(5, 2)); // 100
+```
+
+Partial application is different from currying. Currying transforms a function into a chain of one-argument functions. Partial application simply fixes some arguments and returns a function for the rest.
+
+Partial application is useful for event handlers, configuration, dependency injection, logging, reusable API calls, and reducing repeated arguments.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-63"></a>
+## 63. What is recursion?
+
+**Answer:** Recursion is a programming technique where a function calls itself to solve a problem by breaking it into smaller versions of the same problem. A recursive function needs a base case to stop the recursion and a recursive case to continue it.
+
+```js
+function factorial(n) {
+  if (n <= 1) return 1;
+  return n * factorial(n - 1);
+}
+
+console.log(factorial(5)); // 120
+```
+
+The base case prevents infinite recursion. Without it, the function keeps calling itself until the call stack overflows.
+
+```js
+function badRecursion() {
+  return badRecursion();
+}
+
+// RangeError: Maximum call stack size exceeded
+```
+
+Recursion is useful for tree structures, nested comments, file systems, graph traversal, parsers, and divide-and-conquer algorithms.
+
+```js
+function countNodes(node) {
+  if (!node) return 0;
+
+  return 1 + node.children.reduce((total, child) => {
+    return total + countNodes(child);
+  }, 0);
+}
+```
+
+In JavaScript, recursion can be elegant, but very deep recursion may cause stack overflow. For large inputs, an iterative solution or explicit stack may be safer.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-64"></a>
+## 64. What is an immediately invoked function expression?
+
+**Answer:** An immediately invoked function expression, or IIFE, is a function that is executed immediately after it is created. It is commonly used to create a private scope and avoid polluting the global namespace.
+
+```js
+(function () {
+  const message = "Hello from IIFE";
+  console.log(message);
+})();
+```
+
+The surrounding parentheses turn the function declaration into an expression, and the final `()` invokes it.
+
+IIFEs were especially common before ES modules and block-scoped variables existed. They allowed developers to hide implementation details.
+
+```js
+const counter = (function () {
+  let count = 0;
+
+  return {
+    increment() {
+      count++;
+      return count;
+    }
+  };
+})();
+
+console.log(counter.increment()); // 1
+```
+
+Modern JavaScript often uses modules, `let`, `const`, and block scope instead of IIFEs. However, IIFEs are still useful for one-time initialization, isolating variables in scripts, and explaining closure-based patterns.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-65"></a>
+## 65. What are closures in JavaScript?
+
+**Answer:** A closure is created when a function remembers variables from its lexical scope even after the outer function has finished executing. Closures happen naturally in JavaScript because functions carry a reference to the environment in which they were created.
+
+```js
+function createCounter() {
+  let count = 0;
+
+  return function increment() {
+    count++;
+    return count;
+  };
+}
+
+const counter = createCounter();
+console.log(counter()); // 1
+console.log(counter()); // 2
+```
+
+The inner `increment()` function still has access to `count` because it closes over the variable. The outer function has returned, but its lexical environment remains alive as long as the inner function can still access it.
+
+Closures are used for private variables, function factories, callbacks, memoization, event handlers, modules, and asynchronous code.
+
+```js
+function createFormatter(prefix) {
+  return function format(value) {
+    return `${prefix}: ${value}`;
+  };
+}
+
+const errorFormatter = createFormatter("Error");
+console.log(errorFormatter("Invalid input"));
+```
+
+A closure is not a special syntax. It is a behavior that appears whenever a function uses variables from an outer scope.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-66"></a>
+## 66. How do closures work internally?
+
+**Answer:** Closures work because JavaScript uses lexical environments to store variables. When a function is created, it receives an internal reference to the lexical environment where it was defined. If that function later runs somewhere else, it can still access variables from that original environment.
+
+```js
+function outer() {
+  const secret = "abc123";
+
+  return function inner() {
+    return secret;
+  };
+}
+
+const getSecret = outer();
+console.log(getSecret()); // abc123
+```
+
+When `outer()` runs, JavaScript creates a lexical environment containing `secret`. Normally, local variables become unreachable after a function finishes. But because `inner()` references `secret`, the engine keeps the necessary environment alive.
+
+This does not mean every variable from the outer function must stay forever. JavaScript engines can optimize closures and preserve only what is needed.
+
+Closures are based on lexical scope, not call location. A function remembers where it was created, not where it is executed.
+
+```js
+const name = "Global";
+
+function createLogger() {
+  const name = "Local";
+  return function logName() {
+    console.log(name);
+  };
+}
+
+const logger = createLogger();
+logger(); // Local
+```
+
+Understanding closures internally helps explain private state, asynchronous callbacks, event handlers, and why some variables remain in memory longer than expected.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-67"></a>
+## 67. How can closures be used for private variables?
+
+**Answer:** Closures can create private variables by keeping data inside an outer function and returning functions that control access to that data. Code outside the function cannot directly access the variable, but returned methods can read or update it.
+
+```js
+function createBankAccount(initialBalance) {
+  let balance = initialBalance;
+
+  return {
+    deposit(amount) {
+      if (amount <= 0) throw new Error("Amount must be positive");
+      balance += amount;
+      return balance;
+    },
+    withdraw(amount) {
+      if (amount > balance) throw new Error("Insufficient funds");
+      balance -= amount;
+      return balance;
+    },
+    getBalance() {
+      return balance;
+    }
+  };
+}
+
+const account = createBankAccount(100);
+account.deposit(50);
+console.log(account.getBalance()); // 150
+console.log(account.balance);      // undefined
+```
+
+Here, `balance` is private because it is not a property of the returned object. It exists only in the closure.
+
+This pattern is useful when you want encapsulation without exposing internal state. Before class private fields, closures were one of the most common ways to implement privacy in JavaScript.
+
+Modern JavaScript also supports private class fields with `#`, but closures remain valuable for factory functions, modules, and functional programming patterns.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-68"></a>
+## 68. What are common closure pitfalls?
+
+**Answer:** Common closure pitfalls include accidentally sharing variables, keeping large objects in memory, and misunderstanding how variables behave inside loops or asynchronous callbacks.
+
+A classic problem happens when `var` is used in loops because `var` is function-scoped, not block-scoped.
+
+```js
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => {
+    console.log(i);
+  }, 100);
+}
+
+// 3
+// 3
+// 3
+```
+
+All callbacks close over the same `i`. By the time they execute, the loop has finished and `i` is `3`. Use `let` to create a new block-scoped binding for each iteration.
+
+```js
+for (let i = 0; i < 3; i++) {
+  setTimeout(() => {
+    console.log(i);
+  }, 100);
+}
+
+// 0
+// 1
+// 2
+```
+
+Another pitfall is memory retention. If a closure references a large object, that object may remain in memory as long as the closure exists.
+
+```js
+function createHandler(largeData) {
+  return function handler() {
+    console.log(largeData.length);
+  };
+}
+```
+
+Closures are powerful, but they should be used intentionally. Avoid keeping unnecessary references, remove event listeners when they are no longer needed, and be careful with long-lived callbacks.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-69"></a>
+## 69. What is the module pattern?
+
+**Answer:** The module pattern is a JavaScript design pattern that uses closures to create private state and expose a public API. It was widely used before native ES modules became common.
+
+```js
+const counterModule = (function () {
+  let count = 0;
+
+  function increment() {
+    count++;
+    return count;
+  }
+
+  function reset() {
+    count = 0;
+  }
+
+  return {
+    increment,
+    reset
+  };
+})();
+
+counterModule.increment(); // 1
+counterModule.reset();
+```
+
+The variable `count` is private because it exists inside the IIFE. Only the returned methods can access it.
+
+The module pattern helps organize code, reduce global variables, protect internal implementation details, and expose only the behavior that other code should use.
+
+Modern JavaScript usually uses ES modules instead.
+
+```js
+// counter.js
+let count = 0;
+
+export function increment() {
+  count++;
+  return count;
+}
+```
+
+Even with ES modules, the concept is similar: keep implementation details private and expose a clear interface.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-70"></a>
+## 70. What is the revealing module pattern?
+
+**Answer:** The revealing module pattern is a variation of the module pattern where all functions and variables are defined privately, and then selected functions are explicitly exposed in the returned object.
+
+```js
+const userModule = (function () {
+  let users = [];
+
+  function addUser(user) {
+    users.push(user);
+  }
+
+  function getUsers() {
+    return [...users];
+  }
+
+  function clearUsers() {
+    users = [];
+  }
+
+  return {
+    add: addUser,
+    list: getUsers,
+    clear: clearUsers
+  };
+})();
+```
+
+This pattern is called "revealing" because the return statement reveals which private functions become public.
+
+It can improve readability because the public API is easy to see in one place. It also allows public method names to differ from internal function names.
+
+However, it has limitations. If public methods directly reference private functions, replacing or monkey-patching one public method may not affect internal calls. Also, modern ES modules and classes often provide cleaner alternatives.
+
+The pattern is still useful for understanding encapsulation, closures, and older JavaScript architecture.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-71"></a>
+## 71. How is `this` determined in JavaScript?
+
+**Answer:** In JavaScript, `this` is usually determined by how a function is called, not where it is written. The main binding rules are default binding, implicit binding, explicit binding, constructor binding, and lexical binding for arrow functions.
+
+Implicit binding happens when a function is called as an object method.
+
+```js
+const user = {
+  name: "Alice",
+  greet() {
+    return this.name;
+  }
+};
+
+console.log(user.greet()); // Alice
+```
+
+Default binding happens when a regular function is called directly.
+
+```js
+function showThis() {
+  console.log(this);
+}
+
+showThis();
+```
+
+In non-strict mode, `this` may refer to the global object. In strict mode, it is `undefined`.
+
+Explicit binding uses `call()`, `apply()`, or `bind()`.
+
+```js
+function greet() {
+  return this.name;
+}
+
+const user = { name: "Bob" };
+console.log(greet.call(user)); // Bob
+```
+
+Constructor binding happens with `new`, where `this` refers to the newly created object.
+
+Arrow functions are different because they do not have their own `this`. They capture `this` from the surrounding lexical scope.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-72"></a>
+## 72. What is implicit binding?
+
+**Answer:** Implicit binding occurs when a function is called as a method of an object. In this case, `this` is bound to the object on the left side of the dot at the call site.
+
+```js
+const person = {
+  name: "Alice",
+  sayName() {
+    console.log(this.name);
+  }
+};
+
+person.sayName(); // Alice
+```
+
+The important part is the call site. `this` is not permanently attached to the function.
+
+```js
+const sayName = person.sayName;
+sayName(); // undefined in strict mode, or global value in non-strict mode
+```
+
+When the method is assigned to another variable and called directly, implicit binding is lost.
+
+Nested objects also follow the same rule: `this` refers to the object immediately before the method call.
+
+```js
+const app = {
+  name: "App",
+  user: {
+    name: "User",
+    sayName() {
+      console.log(this.name);
+    }
+  }
+};
+
+app.user.sayName(); // User
+```
+
+Implicit binding is one of the most common sources of `this` bugs, especially when passing object methods as callbacks. Use `bind()`, wrapper functions, or arrow functions when you need to preserve context.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-73"></a>
+## 73. What is default binding?
+
+**Answer:** Default binding is the fallback rule for `this` when a regular function is called without an owning object, without `new`, and without explicit binding through `call()`, `apply()`, or `bind()`.
+
+```js
+function showName() {
+  console.log(this.name);
+}
+
+showName();
+```
+
+In non-strict mode, default binding usually points `this` to the global object. In browsers, that is often `window`. In strict mode, `this` is `undefined`.
+
+```js
+"use strict";
+
+function showThis() {
+  console.log(this);
+}
+
+showThis(); // undefined
+```
+
+Default binding is often accidental. For example, assigning a method to a variable loses its original object context.
+
+```js
+const user = {
+  name: "Alice",
+  greet() {
+    console.log(this.name);
+  }
+};
+
+const greet = user.greet;
+greet(); // this is not user
+```
+
+To avoid default binding issues, use strict mode, avoid relying on global `this`, and explicitly preserve context when passing methods around.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-74"></a>
+## 74. What is constructor binding?
+
+**Answer:** Constructor binding happens when a function is called with the `new` keyword. In that case, JavaScript creates a new object and binds `this` inside the function to that new object.
+
+```js
+function User(name) {
+  this.name = name;
+}
+
+const user = new User("Alice");
+console.log(user.name); // Alice
+```
+
+When `new` is used, JavaScript performs these steps:
+
+1. Creates a new empty object.
+2. Links the new object to the constructor's prototype.
+3. Calls the constructor function with `this` set to the new object.
+4. Returns the new object unless the constructor explicitly returns another object.
+
+```js
+function Person(name) {
+  this.name = name;
+}
+
+Person.prototype.greet = function () {
+  return `Hello, ${this.name}`;
+};
+
+const person = new Person("Bob");
+console.log(person.greet()); // Hello, Bob
+```
+
+Constructor binding is the foundation behind traditional constructor functions and also helps explain what classes do internally. Arrow functions cannot be used as constructors because they do not have their own `this` or `[[Construct]]` behavior.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-75"></a>
+## 75. How does `this` behave in arrow functions?
+
+**Answer:** Arrow functions do not have their own `this`. Instead, they capture `this` from the surrounding lexical scope where they are created. This is called lexical `this` binding.
+
+```js
+const user = {
+  name: "Alice",
+  greetLater() {
+    setTimeout(() => {
+      console.log(this.name);
+    }, 1000);
+  }
+};
+
+user.greetLater(); // Alice
+```
+
+In this example, the arrow function inside `setTimeout()` uses the `this` value from `greetLater()`, which is `user`.
+
+This makes arrow functions useful for callbacks where you want to preserve the outer `this`. However, it makes them unsuitable for object methods that need their own dynamic `this`.
+
+```js
+const user = {
+  name: "Alice",
+  greet: () => {
+    console.log(this.name);
+  }
+};
+
+user.greet(); // usually undefined
+```
+
+`call()`, `apply()`, and `bind()` cannot change `this` inside an arrow function.
+
+```js
+const arrow = () => this;
+arrow.call({ name: "Bob" }); // still uses lexical this
+```
+
+Use arrow functions for lexical context. Use regular functions when `this` should depend on the call site.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-76"></a>
+## 76. What is the difference between `this` in strict mode and non-strict mode?
+
+**Answer:** The main difference appears with default binding. In non-strict mode, when a regular function is called without an object, `this` is automatically converted to the global object. In strict mode, `this` remains `undefined`.
+
+```js
+function nonStrict() {
+  console.log(this);
+}
+
+nonStrict(); // global object in many environments
+```
+
+```js
+"use strict";
+
+function strictExample() {
+  console.log(this);
+}
+
+strictExample(); // undefined
+```
+
+This strict-mode behavior prevents accidental global mutations.
+
+```js
+function User(name) {
+  this.name = name;
+}
+
+User("Alice"); // In non-strict mode, may assign name to global object
+```
+
+In strict mode, calling a constructor function without `new` causes an error because `this` is `undefined`.
+
+```js
+"use strict";
+
+function User(name) {
+  this.name = name; // TypeError if called without new
+}
+```
+
+Implicit binding, explicit binding, and constructor binding still work in strict mode. The key safety improvement is that JavaScript does not silently replace missing `this` with the global object.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-77"></a>
+## 77. What happens when you use the `new` keyword?
+
+**Answer:** When you use the `new` keyword with a constructor function or class, JavaScript creates a new object, connects it to a prototype, binds `this` to the new object, runs the constructor, and returns the object.
+
+```js
+function User(name) {
+  this.name = name;
+}
+
+const user = new User("Alice");
+```
+
+Internally, the process is similar to this simplified version:
+
+```js
+function customNew(Constructor, ...args) {
+  const obj = Object.create(Constructor.prototype);
+  const result = Constructor.apply(obj, args);
+
+  return result !== null && typeof result === "object" ? result : obj;
+}
+```
+
+The prototype link allows instances to access methods defined on the constructor's prototype.
+
+```js
+User.prototype.greet = function () {
+  return `Hello, ${this.name}`;
+};
+
+console.log(user.greet()); // Hello, Alice
+```
+
+If a constructor explicitly returns an object, that object replaces the newly created instance. If it returns a primitive, the primitive is ignored.
+
+Classes also use `new`, but calling a class without `new` throws an error.
+
+```js
+class Product {}
+// Product(); // TypeError
+```
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-78"></a>
+## 78. What is a prototype?
+
+**Answer:** A prototype is an object from which another object can inherit properties and methods. Every ordinary JavaScript object has an internal prototype link, often described as `[[Prototype]]`.
+
+```js
+const user = {
+  name: "Alice"
+};
+
+console.log(Object.getPrototypeOf(user));
+```
+
+Constructor functions have a `prototype` property. Objects created with `new` are linked to that prototype.
+
+```js
+function User(name) {
+  this.name = name;
+}
+
+User.prototype.greet = function () {
+  return `Hello, ${this.name}`;
+};
+
+const user = new User("Alice");
+console.log(user.greet()); // Hello, Alice
+```
+
+The method `greet` is not stored directly on `user`. It is found through the prototype link. This saves memory because all instances can share the same method.
+
+Prototypes are the basis of inheritance in JavaScript. Classes use prototype-based inheritance internally, even though the syntax looks similar to class-based languages.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-79"></a>
+## 79. What is the prototype chain?
+
+**Answer:** The prototype chain is the sequence of objects JavaScript searches when looking for a property or method. If a property is not found directly on an object, JavaScript checks the object's prototype, then the prototype's prototype, and continues until it reaches `null`.
+
+```js
+const user = {
+  name: "Alice"
+};
+
+console.log(user.toString()); // found on Object.prototype
+```
+
+In this example, `toString` is not defined directly on `user`, but it exists on `Object.prototype`.
+
+```js
+function Animal(name) {
+  this.name = name;
+}
+
+Animal.prototype.speak = function () {
+  return `${this.name} makes a sound`;
+};
+
+const dog = new Animal("Rex");
+console.log(dog.speak());
+```
+
+The lookup is roughly:
+
+```text
+dog -> Animal.prototype -> Object.prototype -> null
+```
+
+Property assignment does not usually modify the prototype. If you assign a property to an object, JavaScript creates or updates the property on that object itself.
+
+```js
+dog.name = "Max"; // own property
+```
+
+Understanding the prototype chain is important for inheritance, method sharing, performance, and debugging unexpected property lookups.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-80"></a>
+## 80. What is the difference between `__proto__` and `prototype`?
+
+**Answer:** `prototype` is a property of functions used when creating objects with `new`. `__proto__` is an accessor that exposes an object's internal prototype link. They are related, but they are not the same thing.
+
+```js
+function User(name) {
+  this.name = name;
+}
+
+const user = new User("Alice");
+
+console.log(user.__proto__ === User.prototype); // true
+```
+
+`User.prototype` is the object that will become the prototype of instances created by `new User()`.
+
+```js
+User.prototype.greet = function () {
+  return `Hello, ${this.name}`;
+};
+```
+
+`user.__proto__` points to the prototype object that `user` inherits from. Modern code should prefer `Object.getPrototypeOf()` and `Object.setPrototypeOf()` instead of directly using `__proto__`.
+
+```js
+console.log(Object.getPrototypeOf(user) === User.prototype); // true
+```
+
+A common interview mistake is saying every object has a `prototype` property. Ordinary objects usually do not. Functions have `prototype` because they can be used as constructors, while objects have an internal prototype link.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-81"></a>
+## 81. What is `Object.create()`?
+
+**Answer:** `Object.create()` creates a new object with a specified prototype. It allows you to directly control the prototype of the new object without using a constructor function or class.
+
+```js
+const animal = {
+  speak() {
+    return `${this.name} makes a sound`;
+  }
+};
+
+const dog = Object.create(animal);
+dog.name = "Rex";
+
+console.log(dog.speak()); // Rex makes a sound
+```
+
+Here, `dog` does not have its own `speak` method. JavaScript finds `speak` through the prototype chain.
+
+`Object.create(null)` creates an object with no prototype.
+
+```js
+const dictionary = Object.create(null);
+dictionary.apple = "A fruit";
+
+console.log(dictionary.toString); // undefined
+```
+
+This can be useful for dictionary-like objects where inherited properties such as `toString` or `constructor` should not exist.
+
+`Object.create()` can also define property descriptors as a second argument.
+
+```js
+const user = Object.create(Object.prototype, {
+  name: {
+    value: "Alice",
+    writable: true,
+    enumerable: true
+  }
+});
+```
+
+It is useful for understanding prototypal inheritance and for creating objects with precise prototype behavior.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-82"></a>
+## 82. What is `hasOwnProperty()`?
+
+**Answer:** `hasOwnProperty()` checks whether an object has a property directly on itself, rather than inheriting it from its prototype chain.
+
+```js
+const user = {
+  name: "Alice"
+};
+
+console.log(user.hasOwnProperty("name"));     // true
+console.log(user.hasOwnProperty("toString")); // false
+```
+
+The property `toString` exists through `Object.prototype`, but it is not an own property of `user`.
+
+A safer modern approach is `Object.hasOwn()` because objects can override `hasOwnProperty` or may not inherit from `Object.prototype`.
+
+```js
+const dictionary = Object.create(null);
+dictionary.name = "Alice";
+
+console.log(Object.hasOwn(dictionary, "name")); // true
+```
+
+This matters when iterating over objects.
+
+```js
+for (const key in user) {
+  if (Object.hasOwn(user, key)) {
+    console.log(key, user[key]);
+  }
+}
+```
+
+Use own-property checks when you need to distinguish between data stored directly on an object and properties inherited from prototypes.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-83"></a>
+## 83. What are JavaScript classes?
+
+**Answer:** JavaScript classes are a cleaner syntax for creating constructor functions and working with prototypes. They make object-oriented code easier to read, but JavaScript inheritance remains prototype-based internally.
+
+```js
+class User {
+  constructor(name) {
+    this.name = name;
+  }
+
+  greet() {
+    return `Hello, ${this.name}`;
+  }
+}
+
+const user = new User("Alice");
+console.log(user.greet());
+```
+
+The `constructor` method runs when a new instance is created. Methods defined inside the class body are placed on the class prototype, not copied to every instance.
+
+```js
+console.log(User.prototype.greet === user.greet); // true
+```
+
+Classes support inheritance with `extends`, static methods, getters, setters, and private fields.
+
+```js
+class Admin extends User {
+  static roleName = "admin";
+
+  deleteUser() {
+    return "User deleted";
+  }
+}
+```
+
+Class declarations are not hoisted in the same usable way as function declarations. They are subject to the temporal dead zone, so they must be declared before use.
+
+Classes are best used when you model entities with shared behavior, lifecycle, and state. For simple data transformations, plain functions and objects may be simpler.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-84"></a>
+## 84. Are JavaScript classes syntactic sugar?
+
+**Answer:** JavaScript classes are often described as syntactic sugar over prototype-based inheritance because they provide a cleaner syntax for patterns that were already possible with constructor functions and prototypes.
+
+```js
+class User {
+  constructor(name) {
+    this.name = name;
+  }
+
+  greet() {
+    return `Hello, ${this.name}`;
+  }
+}
+```
+
+This is conceptually similar to:
+
+```js
+function User(name) {
+  this.name = name;
+}
+
+User.prototype.greet = function () {
+  return `Hello, ${this.name}`;
+};
+```
+
+However, classes are not only cosmetic. They also have specific semantics. Class bodies run in strict mode, class constructors cannot be called without `new`, class methods are non-enumerable, and `extends`/`super` provide standardized inheritance behavior.
+
+```js
+class Product {}
+// Product(); // TypeError: class constructor cannot be invoked without 'new'
+```
+
+So the best answer is: classes are mostly syntactic sugar over prototypes, but they also introduce stricter and more standardized behavior than older constructor-function patterns.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-85"></a>
+## 85. What are instance methods?
+
+**Answer:** Instance methods are methods that are available on instances of a class or constructor. In JavaScript classes, instance methods are usually defined in the class body and stored on the prototype.
+
+```js
+class User {
+  constructor(name) {
+    this.name = name;
+  }
+
+  greet() {
+    return `Hello, ${this.name}`;
+  }
+}
+
+const user = new User("Alice");
+console.log(user.greet()); // Hello, Alice
+```
+
+The method `greet()` is not copied into every object. It exists on `User.prototype`, and instances access it through the prototype chain.
+
+```js
+console.log(Object.hasOwn(user, "greet")); // false
+console.log(user.greet === User.prototype.greet); // true
+```
+
+This is memory-efficient because all instances share the same method.
+
+Instance methods are different from static methods. Static methods belong to the class itself, not to individual instances.
+
+```js
+class MathUtil {
+  static add(a, b) {
+    return a + b;
+  }
+}
+
+MathUtil.add(2, 3); // 5
+```
+
+Use instance methods when behavior depends on instance-specific data stored in `this`.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-86"></a>
+## 86. What are private class fields?
+
+**Answer:** Private class fields are class properties that can only be accessed inside the class body. They are declared using the `#` prefix and provide true language-level privacy.
+
+```js
+class BankAccount {
+  #balance = 0;
+
+  deposit(amount) {
+    if (amount <= 0) throw new Error("Invalid amount");
+    this.#balance += amount;
+  }
+
+  getBalance() {
+    return this.#balance;
+  }
+}
+
+const account = new BankAccount();
+account.deposit(100);
+console.log(account.getBalance()); // 100
+// console.log(account.#balance); // SyntaxError
+```
+
+Private fields are not normal properties with special names. They cannot be accessed with bracket notation, enumerated with `Object.keys()`, or reached from outside the class.
+
+```js
+console.log(account["#balance"]); // undefined
+```
+
+They are useful for protecting internal state and enforcing class invariants. For example, a balance should only change through validated methods like `deposit()` or `withdraw()`.
+
+Private fields are different from naming conventions like `_balance`, which only signal privacy but do not enforce it.
+
+```js
+class OldStyle {
+  constructor() {
+    this._value = 123; // still public
+  }
+}
+```
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-87"></a>
+## 87. What are getters and setters?
+
+**Answer:** Getters and setters are special methods that allow object properties to be read and updated using property syntax while running custom logic behind the scenes.
+
+```js
+class User {
+  constructor(firstName, lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
+  get fullName() {
+    return `${this.firstName} ${this.lastName}`;
+  }
+
+  set fullName(value) {
+    const [firstName, lastName] = value.split(" ");
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+}
+
+const user = new User("Alice", "Smith");
+console.log(user.fullName); // Alice Smith
+
+user.fullName = "Bob Johnson";
+console.log(user.firstName); // Bob
+```
+
+A getter runs when a property is read. A setter runs when a property is assigned.
+
+Getters are useful for computed properties, derived values, lazy calculations, and API design. Setters are useful for validation, normalization, and keeping related state consistent.
+
+```js
+const product = {
+  price: 100,
+  get priceWithTax() {
+    return this.price * 1.2;
+  }
+};
+```
+
+Avoid putting expensive or surprising side effects in getters. Since getters look like normal property access, developers expect them to be relatively cheap and predictable.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-88"></a>
+## 88. What is inheritance using `extends`?
+
+**Answer:** Inheritance using `extends` allows one class to inherit properties and methods from another class. The child class can reuse parent behavior and add or override functionality.
+
+```js
+class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+
+  speak() {
+    return `${this.name} makes a sound`;
+  }
+}
+
+class Dog extends Animal {
+  bark() {
+    return `${this.name} barks`;
+  }
+}
+
+const dog = new Dog("Rex");
+console.log(dog.speak()); // Rex makes a sound
+console.log(dog.bark());  // Rex barks
+```
+
+The `extends` keyword sets up the prototype chain so that instances of the child class can access methods from the parent class.
+
+```text
+dog -> Dog.prototype -> Animal.prototype -> Object.prototype -> null
+```
+
+If the child class defines a constructor, it must call `super()` before using `this`.
+
+```js
+class Cat extends Animal {
+  constructor(name, color) {
+    super(name);
+    this.color = color;
+  }
+}
+```
+
+Inheritance is useful when there is a true "is-a" relationship. However, deep inheritance hierarchies can become hard to maintain. Composition is often a better choice when behavior should be mixed and reused flexibly.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-89"></a>
+## 89. What is `super()` in classes?
+
+**Answer:** `super()` calls the constructor of the parent class. In a derived class, you must call `super()` before accessing `this` inside the constructor.
+
+```js
+class User {
+  constructor(name) {
+    this.name = name;
+  }
+}
+
+class Admin extends User {
+  constructor(name, permissions) {
+    super(name);
+    this.permissions = permissions;
+  }
+}
+
+const admin = new Admin("Alice", ["delete"]);
+```
+
+The parent constructor initializes the inherited part of the object. After `super()` runs, the child constructor can add its own properties.
+
+`super` can also call parent methods.
+
+```js
+class Animal {
+  speak() {
+    return "Some sound";
+  }
+}
+
+class Dog extends Animal {
+  speak() {
+    return `${super.speak()} and bark`;
+  }
+}
+```
+
+In static methods, `super` can call static methods from the parent class.
+
+```js
+class Base {
+  static type() {
+    return "base";
+  }
+}
+
+class Child extends Base {
+  static type() {
+    return `child extends ${super.type()}`;
+  }
+}
+```
+
+`super` is only valid inside class methods and constructors where inheritance is involved.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-90"></a>
+## 90. What is method overriding?
+
+**Answer:** Method overriding happens when a child class defines a method with the same name as a method in its parent class. The child method replaces the parent method for instances of the child class.
+
+```js
+class Animal {
+  speak() {
+    return "Animal makes a sound";
+  }
+}
+
+class Dog extends Animal {
+  speak() {
+    return "Dog barks";
+  }
+}
+
+const dog = new Dog();
+console.log(dog.speak()); // Dog barks
+```
+
+JavaScript looks for methods on the child prototype before checking the parent prototype. Since `Dog.prototype.speak` exists, it is used instead of `Animal.prototype.speak`.
+
+A child method can still call the parent method using `super`.
+
+```js
+class Dog extends Animal {
+  speak() {
+    return `${super.speak()} and Dog barks`;
+  }
+}
+```
+
+Method overriding is useful when a subclass needs specialized behavior while keeping the same public interface. This supports polymorphism: different objects can respond to the same method name in different ways.
+
+```js
+const animals = [new Animal(), new Dog()];
+animals.forEach(animal => console.log(animal.speak()));
+```
+
+Use overriding carefully. If child behavior becomes too different from parent behavior, inheritance may not be the right design.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-91"></a>
+## 91. What is the event loop?
+
+**Answer:** The event loop is the mechanism that allows JavaScript to handle asynchronous operations while running on a single main thread. It coordinates the call stack, task queues, microtask queue, browser APIs or runtime APIs, and rendering.
+
+JavaScript executes synchronous code on the call stack. When asynchronous work is scheduled, such as a timer, network request, or event listener, the runtime handles it outside the stack. When the work is ready, its callback is queued.
+
+```js
+console.log("A");
+
+setTimeout(() => {
+  console.log("B");
+}, 0);
+
+console.log("C");
+
+// A
+// C
+// B
+```
+
+Even with a delay of `0`, the timer callback waits until the current synchronous code finishes.
+
+The event loop repeatedly checks whether the call stack is empty. If it is empty, it takes queued work and pushes callbacks onto the stack for execution. Microtasks, such as Promise callbacks, are processed before the next macrotask.
+
+```js
+setTimeout(() => console.log("timer"), 0);
+Promise.resolve().then(() => console.log("promise"));
+console.log("sync");
+
+// sync
+// promise
+// timer
+```
+
+Understanding the event loop is essential for reasoning about async behavior, UI responsiveness, Promise timing, timers, and performance bottlenecks.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-92"></a>
+## 92. What is the call stack?
+
+**Answer:** The call stack is a stack data structure that keeps track of currently executing function calls. When a function is called, it is pushed onto the stack. When it returns, it is popped off.
+
+```js
+function first() {
+  second();
+}
+
+function second() {
+  third();
+}
+
+function third() {
+  console.log("Done");
+}
+
+first();
+```
+
+The stack flow is roughly:
+
+```text
+first() -> second() -> third()
+```
+
+After `third()` finishes, it is removed from the stack, then `second()`, then `first()`.
+
+The call stack also explains stack traces when errors occur.
+
+```js
+function a() {
+  b();
+}
+
+function b() {
+  throw new Error("Failed");
+}
+
+a();
+```
+
+The error stack shows the chain of function calls that led to the error.
+
+Because the stack has limited size, infinite recursion or extremely deep function calls can cause a stack overflow.
+
+```js
+function recurse() {
+  recurse();
+}
+
+// RangeError: Maximum call stack size exceeded
+```
+
+The call stack is synchronous. Asynchronous callbacks run later only when they are pushed onto the stack by the event loop.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-93"></a>
+## 93. What is the microtask queue?
+
+**Answer:** The microtask queue is a queue for high-priority asynchronous callbacks that should run after the current synchronous code finishes but before the next macrotask, such as a timer or user event.
+
+Promise callbacks are the most common microtasks.
+
+```js
+Promise.resolve().then(() => {
+  console.log("microtask");
+});
+
+console.log("sync");
+
+// sync
+// microtask
+```
+
+Other microtask sources include `queueMicrotask()` and mutation observer callbacks in browsers.
+
+```js
+queueMicrotask(() => {
+  console.log("queued microtask");
+});
+```
+
+The event loop processes all available microtasks before moving to the next macrotask. This means a long chain of microtasks can delay timers, rendering, and user interaction.
+
+```js
+setTimeout(() => console.log("timer"), 0);
+
+Promise.resolve()
+  .then(() => console.log("promise 1"))
+  .then(() => console.log("promise 2"));
+
+// promise 1
+// promise 2
+// timer
+```
+
+Microtasks are important for understanding Promise execution order and why `await` resumes before timer callbacks.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-94"></a>
+## 94. What is the difference between microtasks and macrotasks?
+
+**Answer:** Microtasks and macrotasks are different types of queued asynchronous work. Microtasks have higher priority and are processed after the current call stack completes, before the next macrotask. Macrotasks are processed one at a time in event loop turns.
+
+Common microtasks include:
+
+- Promise `.then()`, `.catch()`, and `.finally()` callbacks
+- `queueMicrotask()` callbacks
+- Mutation observer callbacks in browsers
+
+Common macrotasks include:
+
+- `setTimeout()`
+- `setInterval()`
+- DOM events
+- Message events
+- I/O callbacks depending on the runtime
+
+```js
+setTimeout(() => console.log("macrotask"), 0);
+
+Promise.resolve().then(() => console.log("microtask"));
+
+console.log("sync");
+
+// sync
+// microtask
+// macrotask
+```
+
+The key rule is: after synchronous code finishes, JavaScript drains the microtask queue before running the next macrotask.
+
+This ordering matters in UI code. Too many microtasks can block rendering because the browser may wait until microtasks are finished before painting. Timers are useful when you want to defer work to a later event loop turn.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-95"></a>
+## 95. What is the execution order of synchronous code, promises, and timers?
+
+**Answer:** Synchronous code runs first. Promise callbacks run next as microtasks. Timer callbacks such as `setTimeout()` run later as macrotasks.
+
+```js
+console.log("1");
+
+setTimeout(() => {
+  console.log("2");
+}, 0);
+
+Promise.resolve().then(() => {
+  console.log("3");
+});
+
+console.log("4");
+
+// 1
+// 4
+// 3
+// 2
+```
+
+The order is:
+
+1. `console.log("1")` runs immediately.
+2. `setTimeout()` schedules a macrotask.
+3. `Promise.resolve().then()` schedules a microtask.
+4. `console.log("4")` runs immediately.
+5. The call stack becomes empty.
+6. The microtask queue runs, printing `3`.
+7. The timer macrotask runs, printing `2`.
+
+With `async/await`, code after `await` behaves like a Promise continuation and resumes as a microtask.
+
+```js
+async function run() {
+  console.log("A");
+  await null;
+  console.log("B");
+}
+
+run();
+console.log("C");
+
+// A
+// C
+// B
+```
+
+This execution model is one of the most common interview topics because it tests understanding of the event loop, call stack, microtasks, and timers together.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-96"></a>
+## 96. What is callback hell?
+
+**Answer:** Callback hell is a situation where callbacks are nested inside other callbacks many levels deep, making code difficult to read, debug, test, and maintain. It often happens in asynchronous code where each step depends on the result of the previous step.
+
+```js
+getUser(userId, function (user) {
+  getOrders(user.id, function (orders) {
+    getOrderDetails(orders[0].id, function (details) {
+      processPayment(details.total, function (payment) {
+        sendReceipt(payment.id, function () {
+          console.log("Done");
+        });
+      });
+    });
+  });
+});
+```
+
+This style creates a "pyramid" shape and makes error handling repetitive.
+
+```js
+getUser(userId, function (error, user) {
+  if (error) return handleError(error);
+
+  getOrders(user.id, function (error, orders) {
+    if (error) return handleError(error);
+    // more nesting...
+  });
+});
+```
+
+The problem is not callbacks themselves. Callbacks are useful. The problem is deeply nested control flow, mixed responsibilities, and scattered error handling.
+
+Callback hell can be reduced by naming functions, returning early, modularizing logic, using Promises, or using `async/await`.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-97"></a>
+## 97. How can callback hell be avoided?
+
+**Answer:** Callback hell can be avoided by flattening control flow, using named functions, splitting logic into smaller units, using Promises, or using `async/await`.
+
+One improvement is to extract named functions.
+
+```js
+function handleUser(user) {
+  getOrders(user.id, handleOrders);
+}
+
+function handleOrders(orders) {
+  getOrderDetails(orders[0].id, handleDetails);
+}
+
+getUser(userId, handleUser);
+```
+
+A better modern approach is Promises.
+
+```js
+getUser(userId)
+  .then(user => getOrders(user.id))
+  .then(orders => getOrderDetails(orders[0].id))
+  .then(details => processPayment(details.total))
+  .then(payment => sendReceipt(payment.id))
+  .catch(error => handleError(error));
+```
+
+The most readable approach is often `async/await`.
+
+```js
+async function completeOrder(userId) {
+  try {
+    const user = await getUser(userId);
+    const orders = await getOrders(user.id);
+    const details = await getOrderDetails(orders[0].id);
+    const payment = await processPayment(details.total);
+    await sendReceipt(payment.id);
+  } catch (error) {
+    handleError(error);
+  }
+}
+```
+
+Good design also matters. Avoid putting too much logic in one function, keep error handling consistent, and separate data fetching, validation, transformation, and side effects.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-98"></a>
+## 98. What is `Promise.resolve()`?
+
+**Answer:** `Promise.resolve()` creates a Promise that is already fulfilled with a given value. It is useful for normalizing values into Promises and building consistent asynchronous APIs.
+
+```js
+const promise = Promise.resolve("Success");
+
+promise.then(value => {
+  console.log(value); // Success
+});
+```
+
+Even when the value is immediately available, `.then()` callbacks still run asynchronously as microtasks.
+
+```js
+Promise.resolve().then(() => console.log("promise"));
+console.log("sync");
+
+// sync
+// promise
+```
+
+If you pass an existing Promise to `Promise.resolve()`, it returns a Promise that follows the same eventual state.
+
+```js
+const original = fetch("/api/users");
+const wrapped = Promise.resolve(original);
+
+console.log(original === wrapped); // often true for native promises
+```
+
+If you pass a thenable object, `Promise.resolve()` assimilates it by calling its `then` method.
+
+```js
+const thenable = {
+  then(resolve) {
+    resolve("value from thenable");
+  }
+};
+
+Promise.resolve(thenable).then(console.log);
+```
+
+`Promise.resolve()` is commonly used in utility functions where a result may be synchronous or asynchronous, but the caller should always receive a Promise.
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-99"></a>
+## 99. What is `Promise.reject()`?
+
+**Answer:** `Promise.reject()` creates a Promise that is already rejected with a given reason. The reason is usually an `Error` object, although JavaScript allows any value.
+
+```js
+const promise = Promise.reject(new Error("Failed"));
+
+promise.catch(error => {
+  console.error(error.message); // Failed
+});
+```
+
+Like fulfilled Promise callbacks, rejection handlers run asynchronously as microtasks.
+
+```js
+Promise.reject(new Error("Oops")).catch(() => {
+  console.log("handled");
+});
+
+console.log("sync");
+
+// sync
+// handled
+```
+
+It is generally better to reject with an `Error` object instead of a string because `Error` includes useful debugging information such as a message and stack trace.
+
+```js
+return Promise.reject(new Error("User not found"));
+```
+
+`Promise.reject()` is useful for validating inputs in Promise-based APIs.
+
+```js
+function getUser(id) {
+  if (!id) {
+    return Promise.reject(new Error("User id is required"));
+  }
+
+  return fetch(`/users/${id}`);
+}
+```
+
+In `async` functions, throwing an error has a similar effect: it returns a rejected Promise.
+
+```js
+async function getUser(id) {
+  if (!id) throw new Error("User id is required");
+}
+```
+
+[Go To Top](#how-to-use-this-list)
+
+---
+
+<a id="question-100"></a>
+## 100. What is `Promise.all()`?
+
+**Answer:** `Promise.all()` takes an iterable of Promises or values and returns a single Promise. It fulfills when all input Promises fulfill, and it rejects as soon as one input Promise rejects.
+
+```js
+const [user, posts] = await Promise.all([
+  fetch("/api/user").then(response => response.json()),
+  fetch("/api/posts").then(response => response.json())
+]);
+```
+
+`Promise.all()` is useful when multiple asynchronous operations can run in parallel and all results are required before continuing.
+
+```js
+async function loadDashboard() {
+  const [profile, notifications, settings] = await Promise.all([
+    getProfile(),
+    getNotifications(),
+    getSettings()
+  ]);
+
+  return { profile, notifications, settings };
+}
+```
+
+The returned results preserve the order of the input array, not the order in which the Promises finish.
+
+```js
+const result = await Promise.all([
+  Promise.resolve("first"),
+  Promise.resolve("second")
+]);
+
+console.log(result); // ["first", "second"]
+```
+
+If any Promise rejects, `Promise.all()` rejects immediately with that reason.
+
+```js
+try {
+  await Promise.all([
+    Promise.resolve("ok"),
+    Promise.reject(new Error("failed"))
+  ]);
+} catch (error) {
+  console.error(error.message); // failed
+}
+```
+
+Use `Promise.all()` when tasks are independent and all must succeed. Use `Promise.allSettled()` when you need every result even if some tasks fail.
+
+[Go To Top](#how-to-use-this-list)
