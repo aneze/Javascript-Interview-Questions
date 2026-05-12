@@ -8,7 +8,7 @@ The author of this list is [Aneze Service](https://aneze.com). This project was 
 
 ### How to Use This List
 
-This list is designed to help you prepare for JavaScript interviews in a simple and practical way. Each question includes a clear answer to help you understand the concept, not just memorize it.
+This list is designed to help you prepare for JavaScript interviews in a simple and practical way. Each question includes a clear explanation to help you build a strong understanding of the concepts and improve your problem solving skills.
 
 | No. | Question |
 |---:|---|
