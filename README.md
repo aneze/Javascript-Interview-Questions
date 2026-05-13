@@ -5,6 +5,7 @@ A curated collection of JavaScript interview questions and answers designed to h
 This repository is intended for learners, job seekers, and experienced developers who want to refresh their JavaScript knowledge in a structured way. It covers fundamental and advanced topics, explains key concepts with clear answers, and can be used as a quick reference before interviews or as a study guide for improving everyday JavaScript skills.
 
 Author: [https://aneze.com](https://aneze.com)
+
 Version: 0.1.0
 
 ### How to Use This List
